@@ -79,6 +79,7 @@
   /* letter reveal */
   .reveal span{display:inline-block;opacity:0;transform:translateY(14px) rotateX(40deg);
     animation:letterIn .62s var(--ease) forwards;}
+  .reveal .word{white-space:nowrap;animation:none;opacity:1;transform:none;}
   @keyframes letterIn{to{opacity:1;transform:none;}}
   .gold{color:var(--gold-soft);
     text-shadow:0 0 24px rgba(232,201,137,.35);}
@@ -753,13 +754,21 @@ $$('[data-next]').forEach(b=>b.addEventListener('click',()=>showScene(b.dataset.
    ============================================================ */
 function typeInto(el,text,speed=70,startDelay=0,onDone){
   el.innerHTML='';
-  [...text].forEach((ch,i)=>{
-    const s=document.createElement('span');
-    s.textContent=ch===' '?'\u00A0':ch;
-    s.style.animationDelay=(startDelay+i*speed)+'ms';
-    el.appendChild(s);
+  let i=0;
+  const words=text.split(' ');
+  words.forEach((word,wi)=>{
+    const w=document.createElement('span');
+    w.className='word';
+    for(const ch of word){
+      const s=document.createElement('span');
+      s.textContent=ch;
+      s.style.animationDelay=(startDelay+i*speed)+'ms';
+      w.appendChild(s); i++;
+    }
+    el.appendChild(w);
+    if(wi<words.length-1){ el.appendChild(document.createTextNode(' ')); i++; }
   });
-  if(onDone)setTimeout(onDone,startDelay+text.length*speed+400);
+  if(onDone)setTimeout(onDone,startDelay+i*speed+400);
 }
 function landingIntro(){
   $('#landEye').animate([{opacity:0},{opacity:.85}],{duration:900,fill:'forwards',delay:200});
